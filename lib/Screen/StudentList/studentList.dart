@@ -169,7 +169,7 @@ class _StudentListState extends State<StudentList> {
                                     builder: (context) => StudentDetails(
                                       title: 'Student Details',
                                       studentName: _foundUsers[index]['name'], Matric: _foundUsers[index]["matricNo"],status: _foundUsers[index]
-                                                    ["status"],
+                                                    ["status"], onStatusChanged: (String ) {  },
                                     ),
                                   ),
                                 );
