@@ -2,45 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FeedbackPage extends StatefulWidget {
+  const FeedbackPage(
+      {Key? key,
+      required this.studentName,
+      required this.Matric,
+      required this.onFeedbackSaved})
+      : super(key: key);
+
+  final String studentName, Matric;
+  final Function(String) onFeedbackSaved;
+
   @override
   _FeedbackPageState createState() => _FeedbackPageState();
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
-  Widget _name({required String name}) => Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(name,
-                style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 15,
-                    fontFamily: 'Futura',
-                    fontWeight: FontWeight.bold))
-          ],
-        ),
-      );
-
-  Widget _matricNo({required String matricNo}) => Container(
-        child: Column(
-          children: [
-            Text(
-              matricNo,
-              style: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  fontFamily: 'Futura',
-                  fontWeight: FontWeight.bold),
-            )
-          ],
-        ),
-      );
-
+  late String _studentName;
+  late String _matric;
+  String _feedbackText = '';
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool isBold = false;
   bool isItalic = false;
   bool isUnderline = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _studentName = widget.studentName;
+    _matric = widget.Matric;
+  }
+
+  Widget _name({required String name}) => Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(name,
+              style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 15,
+                  fontFamily: 'Futura',
+                  fontWeight: FontWeight.bold))
+        ],
+      );
+
+  Widget _matricNo({required String matricNo}) => Column(
+        children: [
+          Text(
+            matricNo,
+            style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontFamily: 'Futura',
+                fontWeight: FontWeight.bold),
+          )
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +91,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () {
-              // Save the report content in database
-              final content = _textController.text;
+              _saveFeedback();
             },
           ),
         ],
@@ -113,7 +128,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                                     fontSize: 13,
                                     color: Colors.black54,
                                   )),
-                              _name(name: 'Test'),
+                              _name(name: _studentName),
                             ],
                           ),
                         ],
@@ -127,7 +142,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                               const Text('Matric No',
                                   style: TextStyle(
                                       fontSize: 13, color: Colors.black54)),
-                              _matricNo(matricNo: '2019050'),
+                              _matricNo(matricNo: _matric),
                             ],
                           ),
                         ],
@@ -177,22 +192,19 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   ],
                 ),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: _textController,
                     focusNode: _focusNode,
                     keyboardType: TextInputType.multiline,
-                    maxLines: null, // This allows multiple lines
+                    maxLines: null,
                     decoration: const InputDecoration(
-                      hintText: 'Write your report here...',
+                      hintText: 'Type your feedback here...',
                     ),
                     onChanged: (text) {
-                      _applyTextStyle(); // Apply styles as the user types
+                      _applyTextStyle();
                     },
                   ),
-                )
-
-
-                
+                ),
               ],
             ),
           ),
@@ -201,12 +213,23 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 
+  void _saveFeedback() {
+    String feedbackText = _textController.text;
+    setState(() {
+      _feedbackText = feedbackText;
+    });
+    widget.onFeedbackSaved(feedbackText);
+
+    Navigator.pop(context);
+  }
+
   void _applyTextStyle() {
-    final TextStyle textStyle = TextStyle(
+    /* final TextStyle textStyle = TextStyle(
       fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
       fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
       decoration: isUnderline ? TextDecoration.underline : TextDecoration.none,
     );
+    */
     _textController.value = _textController.value.copyWith(
       text: _textController.text,
       selection: TextSelection.collapsed(offset: _textController.text.length),
