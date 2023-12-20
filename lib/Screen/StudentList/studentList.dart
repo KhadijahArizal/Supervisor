@@ -13,6 +13,7 @@ class StudentList extends StatefulWidget {
 }
 
 class _StudentListState extends State<StudentList> {
+  
   Widget _name({required String name}) => Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
