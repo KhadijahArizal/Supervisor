@@ -19,7 +19,6 @@ class FeedbackPage extends StatefulWidget {
 class _FeedbackPageState extends State<FeedbackPage> {
   late String _studentName;
   late String _matric;
-  String _feedbackText = '';
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool isBold = false;
@@ -216,7 +215,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
   void _saveFeedback() {
     String feedbackText = _textController.text;
     setState(() {
-      _feedbackText = feedbackText;
     });
     widget.onFeedbackSaved(feedbackText);
 
