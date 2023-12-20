@@ -223,6 +223,7 @@ class _SFinalReportState extends State<SFinalReport>
                                                     ["matricNo"],
                                                 status: _foundUsers[index]
                                                     ["status"],
+                                                onStatusChanged: (String) {},
                                               ),
                                             ),
                                           );
@@ -282,6 +283,7 @@ class _SFinalReportState extends State<SFinalReport>
                                                     ["matricNo"],
                                                 status: _foundUsers[index]
                                                     ["status"],
+                                                onStatusChanged: (String) {},
                                               ),
                                             ),
                                           );
