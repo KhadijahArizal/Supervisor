@@ -29,4 +29,16 @@ final List<Map<String, dynamic>> allUsers = [
     "matricNo": "2092873",
     "status": 'pending' // lowercase
   },
+  {
+    "id": 6,
+    "name": "TEST JERRRR",
+    "matricNo": "9876556",
+    "status": 'approved' // lowercase
+  },
+  {
+    "id": 7,
+    "name": "AAAAAA",
+    "matricNo": "9999999",
+    "status": 'approved' // lowercase
+  },
 ];
