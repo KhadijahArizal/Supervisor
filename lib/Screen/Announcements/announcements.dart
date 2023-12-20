@@ -30,9 +30,10 @@ class _AnnouncState extends State<Announc> {
     });
   }
 
-  Widget _buildCustomExpansionTile(
-      int index, String title, String subtitle, String information) {
+  Widget _buildCustomExpansionTile(int index, String title, String subtitle,
+      String information, String fileName, String date) {
     return ExpansionTile(
+      //Title
       title: Text(
         title,
         style: const TextStyle(
@@ -41,6 +42,7 @@ class _AnnouncState extends State<Announc> {
           fontFamily: 'Futura',
         ),
       ),
+      //Name
       subtitle: Text(
         subtitle,
         style: const TextStyle(
@@ -53,13 +55,15 @@ class _AnnouncState extends State<Announc> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon:
+                const Icon(Icons.edit, color: Color.fromRGBO(148, 112, 18, 1)),
             onPressed: () {
               _showEditDialog(index);
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete,
+                color: Color.fromRGBO(148, 112, 18, 1)),
             onPressed: () {
               _showDeleteDialog(index);
             },
@@ -68,15 +72,31 @@ class _AnnouncState extends State<Announc> {
       ),
       children: <Widget>[
         ListTile(
-          title: Text(
+          leading: Text(
             information,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 17,
+              fontFamily: 'Futura',
+            ),
+          ),
+          title: Text(
+            fileName,
             style: const TextStyle(
               color: Colors.black87,
               fontSize: 12,
               fontFamily: 'Futura',
             ),
+            textAlign: TextAlign.end
           ),
-        ),
+          subtitle: Text(date,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 12,
+                fontFamily: 'Futura',
+              ),
+              textAlign: TextAlign.end),
+        )
       ],
       onExpansionChanged: (bool expanded) {
         setState(() {
@@ -91,6 +111,8 @@ class _AnnouncState extends State<Announc> {
         TextEditingController(text: announcements[index].title);
     TextEditingController editInfoController =
         TextEditingController(text: announcements[index].info);
+    TextEditingController editFileName =
+        TextEditingController(text: announcements[index].fileName);
 
     showDialog(
       context: context,
@@ -105,11 +127,16 @@ class _AnnouncState extends State<Announc> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text("Edit Announcement",
-                    style: Theme.of(context).textTheme.headline6),
+                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: editTitleController,
                   decoration: const InputDecoration(labelText: "Title"),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: editFileName,
+                  decoration: const InputDecoration(labelText: "File Name"),
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -125,17 +152,26 @@ class _AnnouncState extends State<Announc> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text("Cancel"),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: Color.fromRGBO(148, 112, 18, 1),
+                        ),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
                         setState(() {
                           announcements[index].title = editTitleController.text;
+                          announcements[index].fileName = editFileName.text;
                           announcements[index].info = editInfoController.text;
                         });
                         Navigator.pop(context);
                       },
-                      child: const Text("Save"),
+                      child: const Text("Save",
+                          style: TextStyle(
+                            color: Color.fromRGBO(148, 112, 18, 1),
+                          )),
                     ),
                   ],
                 ),
@@ -173,7 +209,9 @@ class _AnnouncState extends State<Announc> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text("Cancel"),
+                      child: const Text("Cancel",
+                          style: TextStyle(
+                              color: Color.fromRGBO(148, 112, 18, 1))),
                     ),
                     TextButton(
                       onPressed: () {
@@ -182,7 +220,9 @@ class _AnnouncState extends State<Announc> {
                         });
                         Navigator.pop(context);
                       },
-                      child: const Text("Delete"),
+                      child: const Text("Delete",
+                          style: TextStyle(
+                              color: Color.fromRGBO(148, 112, 18, 1))),
                     ),
                   ],
                 ),
@@ -198,7 +238,6 @@ class _AnnouncState extends State<Announc> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 243, 243, 1),
       appBar: AppBar(
@@ -272,10 +311,6 @@ class _AnnouncState extends State<Announc> {
                             fontFamily: 'Futura',
                             fontWeight: FontWeight.w900),
                       ),
-                      const Divider(
-                        color: Colors.black,
-                        thickness: 0.1,
-                      ),
                       ListView.builder(
                         shrinkWrap: true,
                         itemCount: announcements.length,
@@ -285,6 +320,8 @@ class _AnnouncState extends State<Announc> {
                             '${announcements[index].title}',
                             'Dr.Ameera Binti Huseein',
                             '${announcements[index].info}',
+                            '${announcements[index].fileName}',
+                            '${announcements[index].date}',
                           );
                         },
                       ),
@@ -315,7 +352,7 @@ class _AnnouncState extends State<Announc> {
           }
         },
         backgroundColor: const Color.fromRGBO(148, 112, 18, 0.8),
-        child: const Icon(Icons.add_rounded),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
