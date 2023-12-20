@@ -1,32 +1,62 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:supervisor/Screen/Announcements/thisUpload.dart';
 
 class Upload extends StatefulWidget {
-  const Upload({super.key});
+  const Upload({super.key, this.onFileSelected});
+
+  final void Function(String fileName)? onFileSelected;
 
   @override
   _UploadState createState() => _UploadState();
 }
 
 class _UploadState extends State<Upload> {
+  late TextEditingController _fileNameController;
   TextEditingController title = TextEditingController();
-  //TextEditingController date = TextEditingController();
+  TextEditingController date = TextEditingController();
   TextEditingController informationController = TextEditingController();
-
   DateTime selectedDate = DateTime.now();
-  DateTime endDate = DateTime(2040);
 
-  Future<void> _startDate(BuildContext context) async {
-    final DateTime? spicked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2023),
-        lastDate: DateTime(2040));
-    if (spicked != null && spicked != selectedDate) {
-      setState(() {
-        selectedDate = spicked;
-      });
+  //RealtimeDatabase
+  final announcdb = FirebaseDatabase.instance.ref('Announcements');
+
+  @override
+  void initState() {
+    super.initState();
+    _fileNameController = TextEditingController(text: "-");
+    date.text = DateFormat('dd MMMM yyyy').format(selectedDate);
+  }
+
+  Widget _File({
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: const Icon(Icons.file_present_rounded,
+          size: 28, color: Color.fromRGBO(148, 112, 18, 1)),
+    );
+  }
+
+  void _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null && result.files.isNotEmpty) {
+        PlatformFile file = result.files.first;
+        print('Selected file: ${file.name}');
+
+        setState(() {
+          _fileNameController.text = result.files.first.name;
+        });
+
+        widget.onFileSelected?.call(file.name);
+      }
+    } catch (e) {
+      print('Error picking a file: $e');
     }
   }
 
@@ -86,19 +116,31 @@ class _UploadState extends State<Upload> {
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Title',
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 14,
-                                  fontFamily: 'Futura')),
-                          Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: TextFormField(
-                                controller: title,
-                                autofocus: true,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder()),
-                              )),
+                          const Text(
+                            'Title',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                                fontFamily: 'Futura'),
+                          ),
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                title.text = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                      width: 0, style: BorderStyle.none)),
+                              fillColor: Colors.grey[100],
+                              filled: true,
+                              hintText: 'title',
+                              prefixIcon: const Icon(Icons.person_rounded),
+                            ),
+                          )
                         ]),
                     const SizedBox(height: 10),
                     Column(
@@ -112,25 +154,19 @@ class _UploadState extends State<Upload> {
                                 fontFamily: 'Futura'),
                           ),
                           const SizedBox(height: 5),
-                          Container(
-                              height: 55,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(color: Colors.black38)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  IconButton(
-                                    onPressed: () => _startDate(context),
-                                    icon: const Icon(Icons.date_range,
-                                        color: Colors.black38),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text("${selectedDate.toLocal()}"
-                                      .split(' ')[0]),
-                                ],
-                              ))
+                          TextFormField(
+                            controller: date,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                      width: 0, style: BorderStyle.none)),
+                              fillColor: Colors.grey[100],
+                              filled: true,
+                              prefixIcon: const Icon(Icons.date_range_rounded),
+                            ),
+                            readOnly: true,
+                          ),
                         ]),
                     const SizedBox(height: 10),
                     Column(
@@ -146,11 +182,7 @@ class _UploadState extends State<Upload> {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.file_present_rounded,
-                                      color: Color.fromRGBO(148, 112, 18, 1)),
-                                ),
+                                _File(onTap: _pickFile),
                                 const SizedBox(width: 5),
                                 const Text(
                                   'Attach File',
@@ -160,7 +192,17 @@ class _UploadState extends State<Upload> {
                                       fontFamily: 'Futura'),
                                   textAlign: TextAlign.right,
                                 ),
-                              ])
+                              ]),
+                          Text(
+                            _fileNameController.text.isNotEmpty
+                                ? 'Selected File: ${_fileNameController.text}'
+                                : '',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.green[700],
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ]),
                     const SizedBox(height: 10),
                     Column(
@@ -172,28 +214,44 @@ class _UploadState extends State<Upload> {
                                   fontSize: 14,
                                   fontFamily: 'Futura')),
                           Container(
-                            padding: const EdgeInsets.only(top: 5),
-                            height: 150,
-                            child: TextFormField(
-                              controller: informationController,
-                              expands: true,
-                              maxLines: null,
-                              autofocus: true,
-                              decoration: const InputDecoration(
-                                  alignLabelWithHint: true,
-                                  border: OutlineInputBorder()),
-                            ),
-                          ),
+                              padding: const EdgeInsets.only(top: 5),
+                              height: 150,
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    informationController.text = value;
+                                  });
+                                },
+                                expands: true,
+                                maxLines: null,
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                          width: 0, style: BorderStyle.none)),
+                                  fillColor: Colors.grey[100],
+                                  filled: true,
+                                ),
+                              )),
                         ]),
                     const SizedBox(height: 40),
                     Container(
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          //Navigator.pop(context, informationController.text);
+                          announcdb.push().set({
+                            'Announcement Title': title.text,
+                            'Date': date.text,
+                            'Media': _fileNameController.text,
+                            'Information': informationController.text,
+                          });
+
                           ThisUpload newUpload = ThisUpload(
                             title: title.text,
                             info: informationController.text,
+                            fileName: _fileNameController.text,
+                            date: date.text
                           );
                           Navigator.pop(context, newUpload);
                         },
@@ -209,7 +267,9 @@ class _UploadState extends State<Upload> {
                             horizontal: 25.0,
                           ),
                         ),
-                        child: const Text("Upload"), // Label text
+                        child: const Text("Upload",
+                            style:
+                                TextStyle(color: Colors.white)), // Label text
                       ),
                     ),
                   ],
