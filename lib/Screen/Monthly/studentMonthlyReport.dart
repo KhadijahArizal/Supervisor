@@ -1,4 +1,3 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supervisor/Screen/StudentList/studentDetails.dart';
@@ -21,9 +20,19 @@ class _SMonthlyReportState extends State<SMonthlyReport>
   void initState() {
     tabController = TabController(length: 2, vsync: this);
     super.initState();
+    _runFilter('');
 
-    _foundUsers = _allUsers;
-    super.initState();
+    tabController.addListener(_handleTabChange);
+  }
+
+  void _handleTabChange() {
+    if (tabController.indexIsChanging) {
+      return; 
+    }
+
+    if (tabController.index >= 0 && tabController.index < 2) {
+      _runFilter('');
+    }
   }
 
   @override
@@ -33,21 +42,19 @@ class _SMonthlyReportState extends State<SMonthlyReport>
   }
 
   void _runFilter(String text) {
-    String lowerCaseText = text.toLowerCase();
-
     setState(() {
       if (tabController.index == 0) {
-        // Approved tab is selected, filter approved students
+        // Pending tab is selected, filter pending students
         _foundUsers = _allUsers
             .where(
                 (user) => user["status"].toString().toLowerCase() == 'pending')
             .toList();
       } else {
+        // Approved tab is selected, filter approved students
         _foundUsers = _allUsers
             .where(
                 (user) => user["status"].toString().toLowerCase() == 'approved')
             .toList();
-        // Pending tab is selected, filter pending students
       }
     });
   }
@@ -152,7 +159,7 @@ class _SMonthlyReportState extends State<SMonthlyReport>
               children: [
                 Column(
                   children: [
-                    Padding(
+                    /*Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: Column(
                         children: <Widget>[
@@ -167,7 +174,7 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                           ),
                         ],
                       ),
-                    ),
+                    ),*/
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
@@ -192,7 +199,8 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                                   labelColor:
                                       const Color.fromRGBO(148, 112, 18, 1),
                                   indicatorColor: Colors.white,
-                                  indicatorWeight: 2,
+                                  indicatorWeight: 0.0,
+                                  indicatorSize: TabBarIndicatorSize.tab,
                                   indicator: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.white,
@@ -201,7 +209,7 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                                   tabs: const [
                                     Tab(text: ' Pending'),
                                     Tab(
-                                      text: 'Apporved',
+                                      text: 'Approved',
                                     ),
                                   ],
                                 ),
@@ -216,7 +224,6 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                               _foundUsers.isNotEmpty
                                   ? ListView.separated(
                                       itemCount: _foundUsers.length,
-                                      
                                       itemBuilder: (context, index) =>
                                           GestureDetector(
                                         onTap: () {
@@ -240,7 +247,6 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                                           padding: const EdgeInsets.all(
                                               8.0), // Add your desired padding
                                           child: ListTile(
-                                            
                                             contentPadding:
                                                 const EdgeInsets.all(1),
                                             title: _name(
