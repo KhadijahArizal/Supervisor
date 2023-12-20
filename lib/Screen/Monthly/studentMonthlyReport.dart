@@ -238,7 +238,7 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                                                 Matric: _foundUsers[index]
                                                     ["matricNo"],
                                                 status: _foundUsers[index]
-                                                    ["status"],
+                                                    ["status"], onStatusChanged: (String ) { },
                                               ),
                                             ),
                                           );
@@ -297,7 +297,7 @@ class _SMonthlyReportState extends State<SMonthlyReport>
                                                 Matric: _foundUsers[index]
                                                     ["matricNo"],
                                                 status: _foundUsers[index]
-                                                    ["status"],
+                                                    ["status"], onStatusChanged: (String ) {  },
                                               ),
                                             ),
                                           );
