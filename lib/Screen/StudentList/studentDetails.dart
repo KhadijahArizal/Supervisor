@@ -11,10 +11,7 @@ class StudentDetails extends StatefulWidget {
       required this.status})
       : super(key: key);
 
-  final String title;
-  final String studentName;
-  final String Matric;
-  final String status;
+  final String title, studentName, Matric, status;
 
   @override
   _StudentDetailsState createState() => _StudentDetailsState();
@@ -289,8 +286,10 @@ class _StudentDetailsState extends State<StudentDetails> {
                                                         const Color.fromARGB(
                                                             255, 21, 108, 24),
                                                   ),
-                                                  child:
-                                                      const Text("View Report"),
+                                                  child: const Text(
+                                                      "View Report",
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
                                                 ),
                                               ),
                                             ),
@@ -305,7 +304,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                                                         const Color.fromARGB(
                                                             255, 21, 108, 24),
                                                   ),
-                                                  child: Text('Feedback'),
+                                                  child: Text('Feedback',
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
                                                 ),
                                               ),
                                             ),
@@ -326,8 +327,10 @@ class _StudentDetailsState extends State<StudentDetails> {
                                                     backgroundColor:
                                                         Colors.yellow[700],
                                                   ),
-                                                  child:
-                                                      const Text("View Report"),
+                                                  child: const Text(
+                                                      "View Report",
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
                                                 ),
                                               ),
                                             ),
@@ -340,7 +343,11 @@ class _StudentDetailsState extends State<StudentDetails> {
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              FeedbackPage()),
+                                                              FeedbackPage(
+                                                                studentName:
+                                                                    _studentName,
+                                                                Matric: _matric,
+                                                              )),
                                                     );
                                                   },
                                                   style:
@@ -348,7 +355,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                                                     backgroundColor:
                                                         Colors.yellow[700],
                                                   ),
-                                                  child: const Text("Feedback"),
+                                                  child: const Text("Feedback",
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
                                                 ),
                                               ),
                                             ),
@@ -383,7 +392,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.yellow[700],
                                         ),
-                                        child: const Text("No file"),
+                                        child: const Text("No file",
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ),
                                     ),
                                   ]),
