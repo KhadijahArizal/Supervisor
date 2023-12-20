@@ -8,10 +8,12 @@ class StudentDetails extends StatefulWidget {
       required this.title,
       required this.studentName,
       required this.Matric,
+      required this.onStatusChanged,
       required this.status})
       : super(key: key);
 
   final String title, studentName, Matric, status;
+  final Function(String) onStatusChanged;
 
   @override
   _StudentDetailsState createState() => _StudentDetailsState();
@@ -20,35 +22,26 @@ class StudentDetails extends StatefulWidget {
 class _StudentDetailsState extends State<StudentDetails> {
   late String _studentName;
   late String _matric;
+  late String _selectedStatusF;
+  late List<String> _selectedStatusList;
+  late List<String> _feedbackList;
+
+  void _updateFeedback(int rowIndex, String feedback) {
+    setState(() {
+      _feedbackList[rowIndex] = feedback;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _studentName = widget.studentName;
     _matric = widget.Matric;
-  }
-
-  final String _statuss = 'Approved';
-
-  Widget _status() {
-    Color? statusColor =
-        _statuss == 'Approved' ? Colors.green[700] : Colors.yellow[700];
-    return Container(
-      alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            _statuss, // Use the updated status here
-            style: TextStyle(
-              color: statusColor,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
+    _selectedStatusF = ['Approved', 'Pending'].contains(widget.status)
+        ? widget.status
+        : 'Pending';
+    _selectedStatusList = List.generate(2, (index) => 'Pending');
+    _feedbackList = List.generate(2, (index) => '');
   }
 
   Widget _name({required String name}) => Container(
@@ -83,30 +76,106 @@ class _StudentDetailsState extends State<StudentDetails> {
   DateTime selectedDate = DateTime.now();
   DateTime endDate = DateTime(2040);
 
-  Future<void> _startDate(BuildContext context) async {
-    final DateTime? spicked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2023),
-        lastDate: DateTime(2040));
-    if (spicked != null && spicked != selectedDate) {
-      setState(() {
-        selectedDate = spicked;
-      });
-    }
+  Widget _statusDropdownM(int rowIndex) {
+    return DropdownButton<String>(
+      value: _selectedStatusList[rowIndex],
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _selectedStatusList[rowIndex] = newValue;
+          });
+          widget.onStatusChanged(newValue);
+        }
+      },
+      items: <String>['Approved', 'Pending']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
   }
 
-  Future<void> _endDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2023),
-        lastDate: endDate);
-    if (picked != null && picked != endDate) {
-      setState(() {
-        endDate = picked;
-      });
-    }
+  DataRow _buildDataRow(int rowIndex) {
+    return DataRow(
+      cells: [
+        DataCell(Text('Week ${rowIndex + 1}')),
+        const DataCell(Text('date')),
+        DataCell(_statusDropdownM(rowIndex)),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(148, 112, 18, 2),
+              ),
+              child: const Text(
+                "View Report",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FeedbackPage(
+                        studentName: _studentName,
+                        Matric: _matric,
+                        onFeedbackSaved: (feedback) =>
+                            _updateFeedback(rowIndex, feedback)),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _feedbackList[rowIndex].isNotEmpty
+                    ? Colors.green[700]
+                    : Colors.yellow[700],
+              ),
+              child:
+                  const Text("Feedback", style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ),
+        DataCell(
+          Text(
+            _feedbackList[rowIndex],
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statusDropdownF() {
+    return DropdownButton<String>(
+      value: _selectedStatusF,
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _selectedStatusF = newValue;
+          });
+          widget.onStatusChanged(newValue);
+        }
+      },
+      items: <String>['Approved', 'Pending']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
   }
 
   @override
@@ -261,110 +330,22 @@ class _StudentDetailsState extends State<StudentDetails> {
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Feedback',
+                                            'Type Feedback',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Feedback Comment',
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
                                       rows: [
-                                        DataRow(
-                                          cells: [
-                                            const DataCell(Text('Week 1')),
-                                            const DataCell(Text('date')),
-                                            DataCell(Container(
-                                                child: Text(
-                                                    _statuss))), //STATUS APPROVED OR PENDING
-                                            DataCell(
-                                              Container(
-                                                alignment: Alignment.center,
-                                                child: ElevatedButton(
-                                                  onPressed: () {},
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 21, 108, 24),
-                                                  ),
-                                                  child: const Text(
-                                                      "View Report",
-                                                      style: TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                              ),
-                                            ),
-                                            DataCell(
-                                              Container(
-                                                alignment: Alignment.center,
-                                                child: ElevatedButton(
-                                                  onPressed: () {},
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 21, 108, 24),
-                                                  ),
-                                                  child: Text('Feedback',
-                                                      style: TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        DataRow(
-                                          cells: [
-                                            const DataCell(Text('Week 2')),
-                                            const DataCell(Text('date')),
-                                            DataCell(Text('Pending')),
-                                            DataCell(
-                                              Container(
-                                                alignment: Alignment.center,
-                                                child: ElevatedButton(
-                                                  onPressed: () {},
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.yellow[700],
-                                                  ),
-                                                  child: const Text(
-                                                      "View Report",
-                                                      style: TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                              ),
-                                            ),
-                                            DataCell(
-                                              Container(
-                                                alignment: Alignment.center,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              FeedbackPage(
-                                                                studentName:
-                                                                    _studentName,
-                                                                Matric: _matric,
-                                                              )),
-                                                    );
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.yellow[700],
-                                                  ),
-                                                  child: const Text("Feedback",
-                                                      style: TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        // more rows
+                                        _buildDataRow(0),
+                                        _buildDataRow(1),
                                       ],
                                     ),
                                   ),
@@ -372,6 +353,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                               ),
                             ]))),
                         const SizedBox(height: 20),
+                        
+                        //FINAL REPORT SAMPLE
                         SingleChildScrollView(
                             child: Row(
                                 mainAxisAlignment:
@@ -416,7 +399,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                             fontSize: 13,
                                             color: Colors.black54)),
                                     const SizedBox(height: 5),
-                                    Text(_statuss)
+                                    _statusDropdownF(),
                                   ])
                             ]))
                       ])))),
