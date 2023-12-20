@@ -1,17 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supervisor/BottomNavBar/googleNavBar.dart';
+import 'package:supervisor/Screen/FinalReport/studentNameFinal.dart';
 import 'package:supervisor/Screen/StudentList/studentName.dart';
 import 'package:supervisor/SideNavBar/sideNav.dart';
 
 class Summary extends StatefulWidget {
-  const Summary({super.key, required this.title}); //required this.totalStudents
+  const Summary({super.key, required this.title});
   final String title;
   @override
   _SummaryState createState() => _SummaryState();
 }
 
 class _SummaryState extends State<Summary> {
+  int currentFinalIndex = 0;
+
   Widget _smallRect({required String profile}) {
     return Container(
       alignment: Alignment.topCenter,
@@ -88,6 +92,22 @@ class _SummaryState extends State<Summary> {
     return allUsers.length;
   }
 
+  int _totalPendingM() {
+    return allUsers.where((user) => user["status"] == 'pending').length;
+  }
+
+  int _totalApprovedM() {
+    return allUsers.where((user) => user["status"] == 'approved').length;
+  }
+
+  int _totalPendingF() {
+    return allUsersF.where((user) => user["status"] == 'pending').length;
+  }
+
+  int _totalApprovedF() {
+    return allUsersF.where((user) => user["status"] == 'approved').length;
+  }
+
   Widget _totalS() {
     return Stack(children: [
       Container(
@@ -100,23 +120,25 @@ class _SummaryState extends State<Summary> {
             borderRadius: BorderRadius.circular(10),
             boxShadow: const [BoxShadow(color: Colors.black)],
           ),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      '${_totalStudents()}',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 50,
-                          fontFamily: 'Futura',
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ))
-              ])),
+          child: Container(
+              margin: const EdgeInsets.only(top: 30),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          '${_totalStudents()}',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 50,
+                              fontFamily: 'Futura',
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ))
+                  ]))),
       Align(
           alignment: Alignment.center,
           child: Container(
@@ -148,8 +170,9 @@ class _SummaryState extends State<Summary> {
   }
 
   Widget _totalM() {
-    return Stack(children: [
-      Container(
+    return Stack(
+      children: [
+        Container(
           alignment: Alignment.center,
           height: 150,
           width: double.infinity,
@@ -159,24 +182,69 @@ class _SummaryState extends State<Summary> {
             borderRadius: BorderRadius.circular(10),
             boxShadow: const [BoxShadow(color: Colors.black)],
           ),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: const Text(
-                      'TOTAL',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontFamily: 'Futura',
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ))
-              ])),
-      Align(
+          child: Container(
+              margin: const EdgeInsets.only(top: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Pending',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              '${_totalPendingM()}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Approved',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              '${_totalApprovedM()}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )),
+        ),
+        Align(
           alignment: Alignment.center,
           child: Container(
             height: 50,
@@ -186,27 +254,177 @@ class _SummaryState extends State<Summary> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
               boxShadow: const [
-                BoxShadow(color: Colors.black12, spreadRadius: 2, blurRadius: 1)
+                BoxShadow(
+                    color: Colors.black12, spreadRadius: 2, blurRadius: 1),
               ],
             ),
             child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Total Monthly Reports',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontFamily: 'Futura',
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  )
-                ]),
-          ))
-    ]);
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Total Monthly Reports',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Futura',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  int _currentIndex = 0; // Add this variable to track the current tab index
+  Widget _totalF() {
+    String displayedValue;
+    String label;
+
+    if (currentFinalIndex == 0) {
+      displayedValue = '${_totalApprovedF()}';
+      label = 'Approved';
+    } else if (currentFinalIndex == 1) {
+      displayedValue = '${_totalPendingF()}';
+      label = 'Pending';
+    } else {
+      displayedValue = '';
+      label = '';
+    }
+
+    return Stack(
+      children: [
+        Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(148, 112, 18, 1),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [BoxShadow(color: Colors.black)],
+          ),
+          child: Container(
+            margin: const EdgeInsets.only(top: 30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Text(
+                        label,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Container(
+                                margin: const EdgeInsets.all(20),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    _handleBackAction();
+                                  },
+                                ),
+                              ),
+                            ),
+                            Text(
+                              displayedValue,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                margin: const EdgeInsets.all(20),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    _handleForwardAction();
+                                  },
+                                ),
+                              ),
+                            )
+                          ]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: Container(
+            height: 50,
+            width: double.infinity,
+            margin: const EdgeInsets.only(left: 30, right: 30, bottom: 70),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12, spreadRadius: 2, blurRadius: 1),
+              ],
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Total Final Reports',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Futura',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _handleBackAction() {
+    setState(() {
+      if (currentFinalIndex > 0) {
+        currentFinalIndex--;
+      }
+    });
+  }
+
+  void _handleForwardAction() {
+    setState(() {
+      if (currentFinalIndex < 1) {
+        currentFinalIndex++;
+      }
+    });
+  }
+
+  int _currentIndex = 0;
   void onTabTapped(int index) {
     setState(() {
       _currentIndex =
@@ -223,6 +441,7 @@ class _SummaryState extends State<Summary> {
 
   @override
   Widget build(BuildContext context) {
+    final Future<FirebaseApp> fApp = Firebase.initializeApp();
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 243, 243, 1),
       appBar: AppBar(
@@ -275,6 +494,17 @@ class _SummaryState extends State<Summary> {
               children: [
                 Column(
                   children: [
+                    /*FutureBuilder(
+                        future: fApp,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('ERRORR');
+                          } else if (snapshot.hasData) {
+                            return const Text('YEAYY');
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        }),*/
                     Container(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -334,17 +564,20 @@ class _SummaryState extends State<Summary> {
                       ),
                       const SizedBox(height: 5),
                     ]),
-                    Container(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _totalS(),
-                          ),
-                          Expanded(
-                            child: _totalM(),
-                          ),
-                        ],
-                      ),
+                    Column(
+                      children: [
+                        Container(
+                          child: _totalS(),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          child: _totalM(),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          child: _totalF(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
