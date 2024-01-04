@@ -25,7 +25,7 @@ class GNavbar extends StatelessWidget {
         child: GNav(
           color: Colors.grey, // Change icon color to white
           activeColor: Colors.white, // Change active color
-          tabBackgroundColor: const Color.fromRGBO(148, 112, 18, 1),
+          tabBackgroundColor: const Color.fromRGBO(0, 146, 143, 10),
           gap: 10,
           selectedIndex: currentIndex,
           onTabChange: onTabChange,
