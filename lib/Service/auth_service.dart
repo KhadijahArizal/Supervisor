@@ -4,13 +4,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-      clientId:
-          '753383357173-e2pqr9f4bnfuv1p94oqekvu51u3o1qbu.apps.googleusercontent.com');
-          String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-  late User? user = FirebaseAuth.instance.currentUser;
+    clientId:
+        '753383357173-e2pqr9f4bnfuv1p94oqekvu51u3o1qbu.apps.googleusercontent.com',
+  );
 
-//google sign in
-   Future<User?> handleSignin() async {
+  // Google sign in
+  Future<User?> handleSignIn() async {
     try {
       GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
@@ -41,7 +40,6 @@ class AuthService {
     }
   }
 
-
   // Google sign out
   Future<void> handleSignOut() async {
     try {
@@ -54,6 +52,7 @@ class AuthService {
 
   // Get authenticated user
   User? get currentUser => _auth.currentUser;
+
   Future<bool> isSignInResultValid(User? user) async {
     if (user != null) {
       // Check if the user has the required attributes or roles
@@ -66,5 +65,4 @@ class AuthService {
     }
     return false;
   }
-
 }
