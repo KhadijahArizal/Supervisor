@@ -20,6 +20,25 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Text(
+              'Supervisor Dashboard',
+              style: TextStyle(
+                  color: Colors.black38, fontSize: 15, fontFamily: 'Futura'),
+              textAlign: TextAlign.right,
+            )
+          ]),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 25,
+          color: Color.fromRGBO(0, 146, 143, 10),
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      )),
         backgroundColor: const Color.fromRGBO(244, 243, 243, 1),
         body: SafeArea(
           child: Container(
@@ -60,7 +79,7 @@ class _SignInState extends State<SignIn> {
                         ),
                         const SizedBox(height: 5),
                         const Text(
-                          'Industrial Attachment Programme Dashboard',
+                          'Industrial Attachment Programme Supervisor Dashboard',
                           style: TextStyle(
                             color: Colors.black87,
                             fontSize: 20,
